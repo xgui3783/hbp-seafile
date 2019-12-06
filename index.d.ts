@@ -37,7 +37,15 @@ declare class Seafile{
   
   uploadFile:(fileinput:FileInputInterface, output?:SeafileRepoDirArgument)=>Promise<any>
   udpateFile:(replaceArg:{replaceFilepath:string}&SeafileRepoDirArgument, replacementArg:FileInputInterface)=>Promise<any>
+  readFile:(readArg:SeafileRepoDirArgument) => Promise<any>
 
   ls:(repoDir?:SeafileRepoDirArgument)=>Promise<any>
   mkdir:(repoDir?:SeafileRepoDirArgument)=>Promise<any>
 }
+
+declare namespace nsSeafile {
+  export function init():Promise<any>
+  export function readFile(readArg:SeafileRepoDirArgument):Promise<any>
+}
+
+export = nsSeafile

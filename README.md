@@ -49,6 +49,9 @@ const main = async () => {
   readStream.push('test success again and again\n')
   readStream.push(null)
   await seafileHandle.updateFile({ replaceFilepath: '/iav/test.txt', dir: '/iav/' }, { readStream, filename: 'test.txt' })
+
+  // read file contents in plain text form
+  const txt = await seafileHandle.readFile({ dir: '/iav/test.txt' })
 }
 
 main()

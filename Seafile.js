@@ -170,6 +170,16 @@ class Seafile{
       formData
     })
   }
+
+  async readFile({ repoId, dir, reuse }) {
+    if (!dir) throw new Error(`dir is required for readFile`)
+    const _dir = `${dir[0] === '/' ? '' : '/'}${dir}`
+    const uri = await this._query({ repoId, dir: _dir, dirOperation: 'file' })
+      .then(removeLeadingTrailingDoubleQuote)
+    return this.req({
+      uri
+    })
+  }
 }
 
 module.exports = {

@@ -10,21 +10,26 @@ const main = async () => {
   // const repo_id = await seafileHandle.getDefaultRepoId()
   // const allRepos = await seafileHandle.getRepos()
   // await seafileHandle.uploadFile({pathToFile: './data/vtk-spec.pdf'})
-  // const r = await seafileHandle.ls({ dir: 'iav' })
+  // const r = await seafileHandle.ls()
   // console.log({ r })
   // await seafileHandle.mkdir({ dir: 'iav-v2' })
 
   // required for request form to parse properly, without throwing error
   // probably something to do with mimetype?
-  const readStream = new Readable()
-  readStream.path = 'test.md'
+  // const readStream = new Readable()
+  // readStream.path = 'test.md'
 
-  readStream.push('test success again and again\n')
-  readStream.push(null)
-  await seafileHandle.updateFile({ replaceFilepath: '/iav-v2/test.md', dir: '/iav-v2/' }, { readStream, filename: 'newmd.md' })
+  // readStream.push('test success again and again\n')
+  // readStream.push(null)
+  // await seafileHandle.updateFile({ replaceFilepath: '/iav-v2/test.md', dir: '/iav-v2/' }, { readStream, filename: 'newmd.md' })
 
   // console.log(seafileHandle.token)
   // console.log(await seafileHandle.getDefaultRepoId())
+
+  const rs = await seafileHandle.readFile({ dir: '/iav/config.json' })
+  console.log({ rs })
 }
+
+
 
 main()
