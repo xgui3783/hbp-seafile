@@ -3,6 +3,8 @@ const fs = require('fs')
 const path = require('path')
 const SEAFILE_API_ENDPOINT = process.env.HBP_SEAFILE_API_ENDPOINT || `https://drive.humanbrainproject.eu/api2`
 
+const removeLeadingTrailingDoubleQuote = str => str.replace(/^\"/, '').replace(/\"$/, '')
+
 class Seafile{
   constructor({ accessToken }){
     if (!accessToken) throw new Error('access token is required')
@@ -12,6 +14,7 @@ class Seafile{
     this._accessToken = accessToken
 
     this._uploadUrlMap = new Map()
+    this._updateUrlMap = new Map()
   }
 
   init(){
@@ -83,60 +86,87 @@ class Seafile{
       })
   }
 
-  async getUploadLink({ repoId }){
+  async _query({ repoId, dir = '/', dirOperation } = {}, reqArg = {}){
+    if (!dirOperation) throw new Error(`dirOperation needs to be defined`)
     if (!this._defaultRepoId && !repoId) {
       const repo_id = await this.getDefaultRepoId()
       this._defaultRepoId = repo_id
     }
-
     const _repoId = repoId || this._defaultRepoId
     return this.req({
-      uri: `repos/${_repoId}/upload-link/?p=/iav/`
+      uri: `repos/${_repoId}/${dirOperation}/?p=${dir}`,
+      ...reqArg
     })
   }
 
-  async uploadFile({ writeStream, pathToFile, filename }, { repoId, dir='/' } = {}){
+  getUploadLink({ repoId } = {}){
+    return this._query({ repoId, dirOperation: 'upload-link' })
+      // getUploadLink response contains leading and trailing double commas. Trim these
+      .then(removeLeadingTrailingDoubleQuote)
+  }
+
+  getUpdateLink({ repoId, dir } = {}){
+    return this._query({ repoId, dir, dirOperation: 'update-link' })
+      // getUpdateLink response contains leading and trailing double commas. Trim these
+      .then(removeLeadingTrailingDoubleQuote)
+  }
+
+  async uploadFile({ readStream, pathToFile, filename }, { repoId, dir='/' } = {}){
     let uploadUrl = this._uploadUrlMap.get(repoId)
     if (!uploadUrl) {
       uploadUrl = await this.getUploadLink({ repoId })
-
-      // getUploadLink response contains leading and trailing double commas. Trim these
-      uploadUrl = uploadUrl.replace(/^\"/, '').replace(/\"$/, '')
       this._uploadUrlMap.set(repoId, uploadUrl)
     }
     return this.req({
       method: 'post',
       uri: uploadUrl,
       formData: {
-        file: writeStream || fs.createReadStream(pathToFile),
+        file: readStream || fs.createReadStream(pathToFile),
         filename: filename || path.basename(pathToFile) || 'Untitled',
         parent_dir: dir
       }
     })
   }
 
-  async ls({ repoId, dir = '/' } = {}){
+  ls({ repoId, dir = '/' } = {}){
     const _dir = `${dir[0] === '/' ? '' : '/'}${dir}`
-    const _repo = repoId || this._defaultRepoId || await this.getDefaultRepoId()
-    const uri = `/repos/${_repo}/dir?p=${_dir}`
-    return this.req({
-      uri
-    }).then(r => JSON.parse(r))
+    return this._query({ repoId, dir: _dir, dirOperation: 'dir' })
+      .then(d => JSON.parse(d))
   }
 
-  async mkdir({ repoId, dir } = {}){
+  mkdir({ repoId, dir } = {}){
     if (!dir) throw new Error('dir is required for mkdir')
     const _dir = `${dir[0] === '/' ? '' : '/'}${dir}`
-    const _repo = repoId || this._defaultRepoId || await this.getDefaultRepoId()
-
-    // somehow, the trailing slash at /dir/ is important. or else everything breaks?
-    const uri = `/repos/${_repo}/dir/?p=${_dir}`
+    
     const formData = {
       operation: 'mkdir'
     }
+
+    return this._query({ repoId, dir: _dir, dirOperation: 'dir' }, { method: 'post', formData })
+  }
+
+  async updateFile({ repoId, dir, replaceFilepath } = {}, { readStream, pathToFile, filename }){
+    if (!replaceFilepath) throw new Error(`file to be replaced needs to be defined`)
+
+    let _map = this._updateUrlMap.get(repoId)
+    if (!_map) {
+      _map = new Map()
+      this._updateUrlMap.set(repoId, _map)
+    } 
+    let updateLink = _map.get(dir)
+    if (!updateLink) {
+      updateLink = await this.getUpdateLink({ repoId, dir })
+      _map.set(dir, updateLink)
+    }
+    const formData = {
+      target_file: replaceFilepath,
+      file: readStream || fs.createReadStream(pathToFile),
+      filename: filename || path.basename(pathToFile) || 'Untitled',
+      parent_dir: '/'
+    }
     return this.req({
       method: 'post',
-      uri,
+      uri: updateLink,
       formData
     })
   }
