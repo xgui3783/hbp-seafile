@@ -15,6 +15,8 @@ const { Seafile } = require('hbp-seafile')
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN
 const main = async () => {
 
+  const seafileHandle = new Seafile({ accessToken: process.env.ACCESS_TOKEN })
+  
   // init 
   await seafileHandle.init()
 
