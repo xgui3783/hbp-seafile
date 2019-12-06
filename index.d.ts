@@ -25,7 +25,7 @@ type FileInputInterface = {
 }
 
 
-declare class Seafile{
+export class Seafile{
   constructor(arg:SeafileConstructorArgument){
 
   }
@@ -42,10 +42,3 @@ declare class Seafile{
   ls:(repoDir?:SeafileRepoDirArgument)=>Promise<any>
   mkdir:(repoDir?:SeafileRepoDirArgument)=>Promise<any>
 }
-
-declare namespace nsSeafile {
-  export function init():Promise<any>
-  export function readFile(readArg:SeafileRepoDirArgument):Promise<any>
-}
-
-export = nsSeafile
