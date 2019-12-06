@@ -36,7 +36,7 @@ export class Seafile{
   getDefaultRepoId:() => Promise<string>
   
   uploadFile:(fileinput:FileInputInterface, output?:SeafileRepoDirArgument)=>Promise<any>
-  udpateFile:(replaceArg:{replaceFilepath:string}&SeafileRepoDirArgument, replacementArg:FileInputInterface)=>Promise<any>
+  updateFile:(replaceArg:{replaceFilepath:string}&SeafileRepoDirArgument, replacementArg:FileInputInterface)=>Promise<any>
   readFile:(readArg:SeafileRepoDirArgument) => Promise<any>
 
   ls:(repoDir?:SeafileRepoDirArgument)=>Promise<any>

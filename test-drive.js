@@ -27,7 +27,7 @@ const main = async () => {
   // console.log(await seafileHandle.getDefaultRepoId())
 
   try{
-    const rs = await seafileHandle.readFile({ dir: '/iav/test.json' })
+    const rs = await seafileHandle.ls({ dir: '/interactive-atlas-viewer/' })
     console.log({ rs })
   }catch(e){
     console.log('cauthg error')
