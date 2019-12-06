@@ -18,7 +18,7 @@ class Seafile{
   }
 
   init(){
-    return new Promise(rs => {
+    return new Promise((rs, rj) => {
 
       request.get({
         uri: `${SEAFILE_API_ENDPOINT}/account/token/`,
@@ -26,10 +26,10 @@ class Seafile{
           bearer: this._accessToken
         }
       }, (err, resp, body) => {
-        if (err) throw err
+        if (err) return rj(err)
         if (resp.statusCode >= 400) {
           console.log(body)
-          throw resp.statusCode
+          return rj(resp.statusCode)
         }
         this._token = body
         rs()
@@ -43,7 +43,7 @@ class Seafile{
     if (_method !== 'get' && _method !== 'post' && _method !== 'delete' && _method !== 'put') {
       throw new Error(`method ${method} not implemented`)
     }
-    return new Promise( rs=> {
+    return new Promise((rs, rj) => {
       request({
         uri: _uri,
         method: _method,
@@ -55,10 +55,10 @@ class Seafile{
         ...(formData ? { formData } : {}),
         ...(form ? { form } : {})
       }, (err, resp, body) => {
-        if (err) throw err
+        if (err) return rj(err)
         if (resp.statusCode >= 400) {
           console.log(body)
-          throw resp.statusCode
+          return rj(resp.statusCode)
         }
         rs(body)
       })
@@ -174,15 +174,11 @@ class Seafile{
   async readFile({ repoId, dir, reuse }) {
     if (!dir) throw new Error(`dir is required for readFile`)
     const _dir = `${dir[0] === '/' ? '' : '/'}${dir}`
-    try {
-      const uri = await this._query({ repoId, dir: _dir, dirOperation: 'file' })
-        .then(removeLeadingTrailingDoubleQuote)
-      return this.req({
-        uri
-      })
-    }catch(e) {
-      throw e
-    }
+    const uri = await this._query({ repoId, dir: _dir, dirOperation: 'file' })
+      .then(removeLeadingTrailingDoubleQuote)
+    return this.req({
+      uri
+    })
   }
 }
 

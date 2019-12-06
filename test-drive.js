@@ -26,8 +26,15 @@ const main = async () => {
   // console.log(seafileHandle.token)
   // console.log(await seafileHandle.getDefaultRepoId())
 
-  const rs = await seafileHandle.readFile({ dir: '/iav/config.json' })
-  console.log({ rs })
+  try{
+    const rs = await seafileHandle.readFile({ dir: '/iav/test.json' })
+    console.log({ rs })
+  }catch(e){
+    console.log('cauthg error')
+    console.log(e)
+  }
+
+  console.log('everything is fine still?')
 }
 
 
