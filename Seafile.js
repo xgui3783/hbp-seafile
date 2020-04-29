@@ -1,7 +1,7 @@
 const request = require('request')
 const fs = require('fs')
 const path = require('path')
-const SEAFILE_API_ENDPOINT = process.env.HBP_SEAFILE_API_ENDPOINT || `https://drive.humanbrainproject.eu/api2`
+const SEAFILE_API_ENDPOINT = process.env.HBP_SEAFILE_API_ENDPOINT || `https://drive.ebrains.eu/api2`
 
 const removeLeadingTrailingDoubleQuote = str => str.replace(/^\"/, '').replace(/\"$/, '')
 

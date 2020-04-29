@@ -13,6 +13,12 @@ npm i -s hbp-seafile
 ```javascript
 const { Seafile } = require('hbp-seafile')
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN
+console.log(process.env.HBP_SEAFILE_API_ENDPOINT) // https://drive.ebrains.eu/api2
+
+/**
+ * nb accessToken must have collab.drive scope
+ * or it will not work properly
+*/
 const main = async () => {
 
   const seafileHandle = new Seafile({ accessToken: process.env.ACCESS_TOKEN })
