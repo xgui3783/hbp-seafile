@@ -17,6 +17,12 @@ class Seafile{
     this._updateUrlMap = new Map()
   }
 
+  static from({ token, accessToken }) {
+    const seaFile = new Seafile({ accessToken })
+    seaFile._token = token
+    return seaFile
+  }
+
   init(){
     return new Promise((rs, rj) => {
 

@@ -30,6 +30,8 @@ export class Seafile{
 
   }
 
+  static from:({ token, accessToken }: { token: string, accessToken: string }) => Seafile
+
   init:() => Promise<any>
 
   getRepos:() => Promise<any>

@@ -3,7 +3,8 @@ require('dotenv').config()
 const { Seafile } = require('./Seafile')
 const { Readable } = require('stream')
 const fs = require('fs')
-const seafileHandle = new Seafile({ accessToken: process.env.ACCESS_TOKEN })
+const accessToken = process.env.ACCESS_TOKEN
+const seafileHandle = new Seafile({ accessToken })
 
 const main = async () => {
   await seafileHandle.init()
@@ -27,8 +28,12 @@ const main = async () => {
   // console.log(await seafileHandle.getDefaultRepoId())
 
   try{
-    const rs = await seafileHandle.ls({ dir: '/interactive-atlas-viewer/' })
-    console.log({ rs })
+    const dir = await seafileHandle.ls({ dir: '/interactive-atlas-viewer/' })
+    console.log({ dir })
+    const token = seafileHandle._token
+    const newHandle = Seafile.from({ accessToken, token })
+    const newDir = await newHandle.ls({ dir: '/interactive-atlas-viewer/' })
+    console.log({ newDir })
   }catch(e){
     console.log('cauthg error')
     console.log(e)

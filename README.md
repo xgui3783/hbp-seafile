@@ -13,15 +13,19 @@ npm i -s hbp-seafile
 ```javascript
 const { Seafile } = require('hbp-seafile')
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN
-console.log(process.env.HBP_SEAFILE_API_ENDPOINT) // https://drive.ebrains.eu/api2
+
+// hbp-seafile reads this env var as endpoint to query drive apis
+// if unset: https://drive.ebrains.eu/api2
+console.log(process.env.HBP_SEAFILE_API_ENDPOINT)
 
 /**
- * nb accessToken must have collab.drive scope
- * or it will not work properly
+ * nb
+ * - accessToken must have collab.drive scope
+ * - accessToken must have issuer as iam.ebrains.eu (for drive.ebrains.eu/api2 endpoint)
 */
 const main = async () => {
 
-  const seafileHandle = new Seafile({ accessToken: process.env.ACCESS_TOKEN })
+  const seafileHandle = new Seafile({ accessToken: ACCESS_TOKEN })
   
   // init 
   await seafileHandle.init()
