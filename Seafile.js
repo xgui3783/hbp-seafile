@@ -34,7 +34,7 @@ class Seafile{
       }, (err, resp, body) => {
         if (err) return rj(err)
         if (resp.statusCode >= 400) {
-          console.log(body)
+          console.error(`hbp-seafile init error:`, body)
           return rj(resp.statusCode)
         }
         this._token = body
