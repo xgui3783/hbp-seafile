@@ -45,7 +45,9 @@ class Seafile{
 
   req({ method = 'get', uri, body, formData, form }){
     const _method = method.toLowerCase()
-    const _uri = /^http[s]?\:\/\//.test(uri) ? uri : (`${SEAFILE_API_ENDPOINT}${uri[0] === '/' ? '' : '/'}${uri}`)
+    const _uri = /^http[s]?\:\/\//.test(uri)
+      ? uri
+      : (`${SEAFILE_API_ENDPOINT}${uri[0] === '/' ? '' : '/'}${uri}`)
     if (_method !== 'get' && _method !== 'post' && _method !== 'delete' && _method !== 'put') {
       throw new Error(`method ${method} not implemented`)
     }
@@ -123,13 +125,21 @@ class Seafile{
       uploadUrl = await this.getUploadLink({ repoId })
       this._uploadUrlMap.set(repoId, uploadUrl)
     }
+
+    // parent_dir must be the same as query param p
+    // https://download.seafile.com/published/web-api/v2.1/file-upload.md
+    const relative_dir = dir == '/'
+      ? null
+      : dir.replace(/^\//, '')
     return this.req({
       method: 'post',
       uri: uploadUrl,
+      headers: null,
       formData: {
         file: readStream || fs.createReadStream(pathToFile),
         filename: filename || path.basename(pathToFile) || 'Untitled',
-        parent_dir: dir
+        parent_dir: '/',
+        relative_dir,
       }
     })
   }
