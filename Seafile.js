@@ -128,7 +128,7 @@ class Seafile{
 
     // parent_dir must be the same as query param p
     // https://download.seafile.com/published/web-api/v2.1/file-upload.md
-    const relative_dir = dir == '/'
+    const relative_path = dir == '/'
       ? null
       : dir.replace(/^\//, '')
     return this.req({
@@ -139,7 +139,7 @@ class Seafile{
         file: readStream || fs.createReadStream(pathToFile),
         filename: filename || path.basename(pathToFile) || 'Untitled',
         parent_dir: '/',
-        relative_dir,
+        relative_path,
       }
     })
   }
