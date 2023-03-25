@@ -1,4 +1,4 @@
-const request = require('request')
+const got = require("got")
 const fs = require('fs')
 const path = require('path')
 const SEAFILE_API_ENDPOINT = process.env.HBP_SEAFILE_API_ENDPOINT || `https://drive.ebrains.eu/api2`
@@ -23,27 +23,18 @@ class Seafile{
     return seaFile
   }
 
-  init(){
-    return new Promise((rs, rj) => {
-
-      request.get({
-        uri: `${SEAFILE_API_ENDPOINT}/account/token/`,
-        auth: {
-          bearer: this._accessToken
+  async init(){
+    this._token = await got(
+      {
+        url: `${SEAFILE_API_ENDPOINT}/account/token/`,
+        headers: {
+          "Authorization": `Bearer ${this._accessToken}`
         }
-      }, (err, resp, body) => {
-        if (err) return rj(err)
-        if (resp.statusCode >= 400) {
-          console.error(`hbp-seafile init error:`, body)
-          return rj(resp.statusCode)
-        }
-        this._token = body
-        rs()
-      })
-    })
+      }
+    ).text()
   }
 
-  req({ method = 'get', uri, body, formData, form }){
+  async req({ method = 'get', uri, body, formData, form }){
     const _method = method.toLowerCase()
     const _uri = /^http[s]?\:\/\//.test(uri)
       ? uri
@@ -51,26 +42,14 @@ class Seafile{
     if (_method !== 'get' && _method !== 'post' && _method !== 'delete' && _method !== 'put') {
       throw new Error(`method ${method} not implemented`)
     }
-    return new Promise((rs, rj) => {
-      request({
-        uri: _uri,
-        method: _method,
-        headers: {
-          'Authorization': `Token ${this._token}`,
-          'Accept': 'application/json'
-        },
-        ...(body ? { body } : {}),
-        ...(formData ? { formData } : {}),
-        ...(form ? { form } : {})
-      }, (err, resp, body) => {
-        if (err) return rj(err)
-        if (resp.statusCode >= 400) {
-          console.log(body)
-          return rj(resp.statusCode)
-        }
-        rs(body)
-      })
-    })
+    return got({
+      url: _uri,
+      method: _method,
+      headers: {
+        'Authorization': `Token ${this._token}`,
+        'Accept': 'application/json'
+      }
+    }).text()
   }
 
   get token(){
