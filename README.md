@@ -11,7 +11,7 @@ npm i -s hbp-seafile
 # Usage
 
 ```javascript
-const { Seafile } = require('hbp-seafile')
+import { Seafile } from "hbp-seafile"
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN
 
 // hbp-seafile reads this env var as endpoint to query drive apis

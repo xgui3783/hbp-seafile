@@ -1,8 +1,10 @@
-require('dotenv').config()
+import dotenv from "dotenv"
+import { Seafile } from "./Seafile.mjs"
+import { Readable } from "stream"
+import fs from "fs"
 
-const { Seafile } = require('./Seafile')
-const { Readable } = require('stream')
-const fs = require('fs')
+dotenv.config()
+
 const accessToken = process.env.ACCESS_TOKEN
 const seafileHandle = new Seafile({ accessToken })
 

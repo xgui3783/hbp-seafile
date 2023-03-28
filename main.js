@@ -1,5 +1,1 @@
-const { Seafile } = require('./Seafile')
-
-module.exports = {
-  Seafile
-}
+export { Seafile } from "./Seafile.mjs"

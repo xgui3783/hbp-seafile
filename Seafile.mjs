@@ -1,11 +1,11 @@
-const got = require("got")
-const fs = require('fs')
-const path = require('path')
+import got from "got"
+import fs from "fs"
+import path from "path"
 const SEAFILE_API_ENDPOINT = process.env.HBP_SEAFILE_API_ENDPOINT || `https://drive.ebrains.eu/api2`
 
 const removeLeadingTrailingDoubleQuote = str => str.replace(/^\"/, '').replace(/\"$/, '')
 
-class Seafile{
+export class Seafile{
   constructor({ accessToken }){
     if (!accessToken) throw new Error('access token is required')
 
@@ -175,8 +175,4 @@ class Seafile{
       uri
     })
   }
-}
-
-module.exports = {
-  Seafile
 }
